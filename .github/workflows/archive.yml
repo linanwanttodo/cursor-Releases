@@ -95,13 +95,58 @@ jobs:
           fi
           echo "matrix=$(cat /tmp/matrix)" >> $GITHUB_OUTPUT
 
+  cursor-linux-pkg:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 下载 deb/rpm 并上传到对应版本的 Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'EOF'
+          import json, subprocess, sys, glob
+          d = json.load(open("data/versions.json", encoding="utf-8"))["versions"]
+          # 按次版本分组, 取最新补丁版本作为该系列的 Release tag
+          minors = {}
+          for v in sorted(d, key=lambda x: [int(p) for p in x.split(".")]):
+              minors[".".join(v.split(".")[:2])] = v
+          for minor, tag in minors.items():
+              print(f"== {minor} -> {tag}")
+              files = []
+              for plat in ("linux-x64-deb", "linux-arm64-deb",
+                           "linux-x64-rpm", "linux-arm64-rpm"):
+                  url = f"https://api2.cursor.sh/updates/download/golden/{plat}/cursor/{minor}"
+                  out = url.rsplit("/", 3)[-3]  # 占位, 用重定向文件名更好
+                  r = subprocess.run(
+                      ["curl", "-sL", "--retry", "3", "-o", f"/tmp/{plat}.bin",
+                       "-w", "%{url_effective}", url],
+                      capture_output=True, text=True)
+                  final = r.stdout.strip()
+                  ext = "deb" if "deb" in plat else "rpm"
+                  # 用最终 URL 的文件名, 保持与官网一致
+                  fname = final.rsplit("/", 1)[-1] or f"cursor-{minor}-{plat}.{ext}"
+                  subprocess.run(["mv", f"/tmp/{plat}.bin", fname], check=True)
+                  files.append(fname)
+              r = subprocess.run(["gh", "release", "view", tag], capture_output=True)
+              if r.returncode != 0:
+                  subprocess.run(["gh", "release", "create", tag,
+                                  "--title", f"Cursor {tag}",
+                                  "--notes", f"发布日期: {d[tag].get('date','')}\n\n"
+                                  + "deb/rpm 来自官方 golden 端点"], check=True)
+              subprocess.run(["gh", "release", "upload", tag, *files, "--clobber"], check=True)
+          EOF
+
   byok:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+
       - name: 下载并上传 cursor-byok 资产
         env:
           GH_TOKEN: ${{ github.token }}
           UPSTREAM: leookun/cursor-byok
+          REPO: ${{ github.repository }}
           VERSIONS: ${{ github.event.inputs.byok_versions || 'v1.0.1 v1.0.0' }}
         run: |
           for tag in $VERSIONS; do
@@ -109,12 +154,12 @@ jobs:
             dir="assets/$tag"
             mkdir -p "$dir"
             gh release download "$tag" -R "$UPSTREAM" --pattern '*' --dir "$dir"
-            if gh release view "$tag" >/dev/null 2>&1; then
+            if gh release view "$tag" -R "$REPO" >/dev/null 2>&1; then
               echo "Release $tag 已存在, 跳过创建"
             else
               title=$(gh release view "$tag" -R "$UPSTREAM" --json name -q .name)
               body=$(gh release view "$tag" -R "$UPSTREAM" --json body -q .body)
-              gh release create "$tag" --title "$title" --notes "$body"
+              gh release create "$tag" -R "$REPO" --title "$title" --notes "$body"
             fi
-            gh release upload "$tag" "$dir"/* --clobber
+            gh release upload "$tag" -R "$REPO" "$dir"/* --clobber
           done
