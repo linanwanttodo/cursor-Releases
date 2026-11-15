@@ -48,5 +48,30 @@
     "slug": "start-from-scratch",
     "date": "2026-08-27",
     "title": "Start from scratch, without a repo"
+  },
+  {
+    "slug": "08-19-26",
+    "date": "2026-08-19",
+    "title": "Cloud Agents and Cursor Harness Improvements"
+  },
+  {
+    "slug": "origin-code-hosting",
+    "date": "2026-08-17",
+    "title": "Origin Code Hosting"
+  },
+  {
+    "slug": "08-13-26",
+    "date": "2026-08-13",
+    "title": "Cloud Agents Start 3x Faster with Builds"
+  },
+  {
+    "slug": "google-workspace-plugins",
+    "date": "2026-08-03",
+    "title": "Google Workspace Plugins"
+  },
+  {
+    "slug": "ipad",
+    "date": "2026-07-29",
+    "title": "Cursor, now on iPad"
   }
 ]
