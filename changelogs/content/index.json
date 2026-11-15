@@ -1,0 +1,52 @@
+[
+  {
+    "slug": "voice-chat",
+    "date": "2026-11-06",
+    "title": "Voice Chat with Agents"
+  },
+  {
+    "slug": "build-live-apps",
+    "date": "2026-11-05",
+    "title": "Build Live Apps in Cursor"
+  },
+  {
+    "slug": "agent-sdk",
+    "date": "2026-10-20",
+    "title": "Agent SDK"
+  },
+  {
+    "slug": "cloud-agent-canvases-and-environments",
+    "date": "2026-10-16",
+    "title": "Cloud Agent Canvases and Environment Improvements"
+  },
+  {
+    "slug": "origin-app-marketplace",
+    "date": "2026-10-13",
+    "title": "Origin App Marketplace"
+  },
+  {
+    "slug": "remote-control-local-agents",
+    "date": "2026-10-06",
+    "title": "Remote control for local agents"
+  },
+  {
+    "slug": "rollouts-and-security-reviewer",
+    "date": "2026-09-23",
+    "title": "Rollouts and Security Review"
+  },
+  {
+    "slug": "projects",
+    "date": "2026-09-10",
+    "title": "Cursor Projects"
+  },
+  {
+    "slug": "self-hosted-machines",
+    "date": "2026-09-02",
+    "title": "Self-hosted machines"
+  },
+  {
+    "slug": "start-from-scratch",
+    "date": "2026-08-27",
+    "title": "Start from scratch, without a repo"
+  }
+]

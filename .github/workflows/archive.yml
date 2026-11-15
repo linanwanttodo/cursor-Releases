@@ -46,17 +46,19 @@ jobs:
                   print(f"下载失败 {plat}: {url}", file=sys.stderr)
                   sys.exit(1)
 
-          # Release notes: 日期 + 日期 ±3 天内的更新日志
+          # Release notes: 日期 + 日期 ±3 天内的更新日志(含正文)
           notes = f"发布日期: {info.get('date', 'unknown')}\n"
           try:
               d0 = datetime.strptime(info["date"], "%Y-%m-%d").date()
-              entries = json.load(open("changelogs/index.json", encoding="utf-8"))
+              entries = json.load(open("changelogs/content/index.json", encoding="utf-8"))
               hits = [e for e in entries
                       if abs((datetime.strptime(e["date"], "%Y-%m-%d").date() - d0).days) <= 3]
-              if hits:
-                  notes += "\n## 更新日志\n"
-                  for e in sorted(hits, key=lambda x: x["date"]):
-                      notes += f"- [{e['slug']}](https://cursor.com/changelog/{e['slug']}) ({e['date']})\n"
+              for e in sorted(hits, key=lambda x: x["date"]):
+                  try:
+                      md = open(f"changelogs/content/{e['slug']}.md", encoding="utf-8").read()
+                  except FileNotFoundError:
+                      continue
+                  notes += "\n---\n" + md
           except ValueError:
               pass
 
@@ -135,6 +137,40 @@ jobs:
                                   "--notes", f"发布日期: {d[tag].get('date','')}\n\n"
                                   + "deb/rpm 来自官方 golden 端点"], check=True)
               subprocess.run(["gh", "release", "upload", tag, *files, "--clobber"], check=True)
+          EOF
+
+  notes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 用 changelog 正文刷新各版本 Release 说明
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'EOF'
+          import json, subprocess
+          from datetime import datetime
+          d = json.load(open("data/versions.json", encoding="utf-8"))["versions"]
+          entries = json.load(open("changelogs/content/index.json", encoding="utf-8"))
+          for ver, info in sorted(d.items(), key=lambda kv: kv[0]):
+              try:
+                  d0 = datetime.strptime(info["date"], "%Y-%m-%d").date()
+              except ValueError:
+                  continue
+              notes = f"发布日期: {info.get('date', 'unknown')}\n"
+              hits = [e for e in entries
+                      if abs((datetime.strptime(e["date"], "%Y-%m-%d").date() - d0).days) <= 3]
+              for e in sorted(hits, key=lambda x: x["date"]):
+                  try:
+                      md = open(f"changelogs/content/{e['slug']}.md", encoding="utf-8").read()
+                  except FileNotFoundError:
+                      continue
+                  notes += "\n---\n" + md
+              if not hits:
+                  notes += "\n该发布日期前后 3 天内没有官方更新日志条目。"
+              subprocess.run(["gh", "release", "edit", ver, "--notes", notes], check=True)
+              print("updated", ver)
           EOF
 
   byok:
