@@ -24,6 +24,20 @@ Cursor 编辑器 3.23–3.30 各版本的全平台安装包存档（GitHub Relea
 | 3.23.23 | 2026-10-05 | 全平台 | [Remote control for local agents（2026-10-06）](https://cursor.com/changelog/remote-control-local-agents) |
 | 3.23.12 | 2026-10-01 | 全平台 | — |
 | 3.23.10 | 2026-10-01 | 全平台 | — |
+| 3.22.12 | 2026-09-28 | 全平台 | — |
+| 3.22.7 | 2026-09-24 | 全平台 | [Rollouts and Security Review（2026-09-23）](https://cursor.com/changelog/rollouts-and-security-reviewer) |
+| 3.21.18 | 2026-09-22 | 全平台 | [Rollouts and Security Review（2026-09-23）](https://cursor.com/changelog/rollouts-and-security-reviewer) |
+| 3.21.16 | 2026-09-19 | 全平台 | — |
+| 3.21.13 | 2026-09-18 | 全平台 | — |
+| 3.21.12 | 2026-09-18 | 全平台 | — |
+| 3.21.9 | 2026-09-17 | 全平台 | — |
+| 3.21.4 | 2026-09-16 | 全平台 | — |
+| 3.20.21 | 2026-09-13 | 全平台 | [Cursor Projects（2026-09-10）](https://cursor.com/changelog/projects) |
+| 3.20.17 | 2026-09-12 | 全平台 | [Cursor Projects（2026-09-10）](https://cursor.com/changelog/projects) |
+| 3.20.15 | 2026-09-12 | 全平台 | [Cursor Projects（2026-09-10）](https://cursor.com/changelog/projects) |
+| 3.20.14 | 2026-09-11 | 全平台 | [Cursor Projects（2026-09-10）](https://cursor.com/changelog/projects) |
+| 3.20.10 | 2026-09-11 | 全平台 | [Cursor Projects（2026-09-10）](https://cursor.com/changelog/projects) |
+| 3.20.7 | 2026-09-10 | 全平台 | [Cursor Projects（2026-09-10）](https://cursor.com/changelog/projects) |
 | Cursor BYOK v1.0.1 | 2026-09-20 | 全平台（上游 leookun/cursor-byok） | — |
 | Cursor BYOK v1.0.0 | 2026-09-15 | 全平台（上游 leookun/cursor-byok） | — |
 
