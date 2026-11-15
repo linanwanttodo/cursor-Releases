@@ -107,36 +107,53 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           python3 - <<'EOF'
-          import json, subprocess, sys, glob
+          import json, re, subprocess, sys, os
           d = json.load(open("data/versions.json", encoding="utf-8"))["versions"]
-          # 按次版本分组, 取最新补丁版本作为该系列的 Release tag
-          minors = {}
-          for v in sorted(d, key=lambda x: [int(p) for p in x.split(".")]):
-              minors[".".join(v.split(".")[:2])] = v
-          for minor, tag in minors.items():
-              print(f"== {minor} -> {tag}")
-              files = []
-              for plat in ("linux-x64-deb", "linux-arm64-deb",
-                           "linux-x64-rpm", "linux-arm64-rpm"):
-                  url = f"https://api2.cursor.sh/updates/download/golden/{plat}/cursor/{minor}"
-                  out = url.rsplit("/", 3)[-3]  # 占位, 用重定向文件名更好
-                  r = subprocess.run(
-                      ["curl", "-sL", "--retry", "3", "-o", f"/tmp/{plat}.bin",
-                       "-w", "%{url_effective}", url],
-                      capture_output=True, text=True)
-                  final = r.stdout.strip()
-                  ext = "deb" if "deb" in plat else "rpm"
-                  # 用最终 URL 的文件名, 保持与官网一致
-                  fname = final.rsplit("/", 1)[-1] or f"cursor-{minor}-{plat}.{ext}"
-                  subprocess.run(["mv", f"/tmp/{plat}.bin", fname], check=True)
-                  files.append(fname)
-              r = subprocess.run(["gh", "release", "view", tag], capture_output=True)
+          base = "https://downloads.cursor.com/production"
+          # 每个版本用自身 commit SHA 拼出 4 个 deb/rpm 直链
+          tpls = [
+              "linux/x64/deb/amd64/deb/cursor_{v}_amd64.deb",
+              "linux/x64/rpm/x86_64/cursor-{v}.el8.x86_64.rpm",
+              "linux/arm64/deb/arm64/deb/cursor_{v}_arm64.deb",
+              "linux/arm64/rpm/aarch64/cursor-{v}.el8.aarch64.rpm",
+          ]
+          for ver, info in sorted(d.items(), key=lambda kv: [int(p) for p in kv[0].split(".")]):
+              m = re.search(r"/production/([0-9a-f]{40})/",
+                            next(iter(info["platforms"].values()))["downloadUrl"])
+              if not m:
+                  print(f"跳过 {ver}: 无法提取 commit SHA", file=sys.stderr)
+                  continue
+              sha = m.group(1)
+              paths = [p.format(v=ver) for p in tpls]
+              r = subprocess.run(["gh", "release", "view", ver, "--json", "assets",
+                                  "-q", ".assets[].name"], capture_output=True, text=True)
               if r.returncode != 0:
-                  subprocess.run(["gh", "release", "create", tag,
-                                  "--title", f"Cursor {tag}",
-                                  "--notes", f"发布日期: {d[tag].get('date','')}\n\n"
-                                  + "deb/rpm 来自官方 golden 端点"], check=True)
-              subprocess.run(["gh", "release", "upload", tag, *files, "--clobber"], check=True)
+                  subprocess.run(["gh", "release", "create", ver,
+                                  "--title", f"Cursor {ver}",
+                                  "--notes", f"发布日期: {info.get('date','')}"], check=True)
+                  r = subprocess.run(["gh", "release", "view", ver, "--json", "assets",
+                                      "-q", ".assets[].name"], capture_output=True, text=True)
+              existing = set(r.stdout.split())
+              missing = [p for p in paths if p.rsplit("/", 1)[-1] not in existing]
+              if not missing:
+                  print(f"跳过 {ver}: deb/rpm 已齐全")
+                  continue
+              os.makedirs("pkgs", exist_ok=True)
+              files = []
+              for p in missing:
+                  fname = p.rsplit("/", 1)[-1]
+                  out = f"pkgs/{fname}"
+                  url = f"{base}/{sha}/{p}"
+                  rc = subprocess.run(["curl", "-fL", "--retry", "3",
+                                       "--connect-timeout", "20", "-o", out, url]).returncode
+                  if rc != 0 or not os.path.exists(out) or os.path.getsize(out) == 0:
+                      print(f"下载失败 {ver} {fname} {url}", file=sys.stderr)
+                      sys.exit(1)
+                  files.append(out)
+              subprocess.run(["gh", "release", "upload", ver, *files, "--clobber"], check=True)
+              for f in files:
+                  os.remove(f)
+              print(f"已补齐 {ver}: {len(files)} 个 deb/rpm")
           EOF
 
   notes:
