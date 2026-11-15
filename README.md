@@ -1,6 +1,6 @@
 # Cursor Releases 存档
 
-Cursor 编辑器 3.23–3.30 各版本的全平台安装包存档（GitHub Releases 附件），
+Cursor 编辑器 3.23–3.28 各版本的全平台安装包存档（GitHub Releases 附件），
 以及 cursor-byok 上游版本的 Release 资产存档。
 
 ## 版本与发布日期
