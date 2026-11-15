@@ -24,6 +24,8 @@ Cursor 编辑器 3.23–3.30 各版本的全平台安装包存档（GitHub Relea
 | 3.23.23 | 2026-10-05 | 全平台 | [Remote control for local agents（2026-10-06）](https://cursor.com/changelog/remote-control-local-agents) |
 | 3.23.12 | 2026-10-01 | 全平台 | — |
 | 3.23.10 | 2026-10-01 | 全平台 | — |
+| Cursor BYOK v1.0.1 | 2026-09-20 | 全平台（上游 leookun/cursor-byok） | — |
+| Cursor BYOK v1.0.0 | 2026-09-15 | 全平台（上游 leookun/cursor-byok） | — |
 
 各 Release 的说明中附有对应更新日志的完整正文。
 
