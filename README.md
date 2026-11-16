@@ -7,6 +7,10 @@ Cursor 编辑器 3.23–3.28 各版本的全平台安装包存档（GitHub Relea
 
 | 版本 | 发布日期 | 平台 | 对应更新日志 |
 |---|---|---|---|
+| 3.30.14 | 2026-11-13 | 全平台 | — |
+| 3.30.8 | 2026-11-12 | 全平台 | — |
+| 3.29.15 | 2026-11-09 | 全平台 | [Voice Chat with Agents（2026-11-06）](https://cursor.com/changelog/voice-chat) |
+| 3.29.9 | 2026-11-05 | 全平台 | [Build Live Apps in Cursor（2026-11-05）](https://cursor.com/changelog/build-live-apps)；[Voice Chat with Agents（2026-11-06）](https://cursor.com/changelog/voice-chat) |
 | 3.28.7 | 2026-11-03 | 全平台 | [Build Live Apps in Cursor（2026-11-05）](https://cursor.com/changelog/build-live-apps)；[Voice Chat with Agents（2026-11-06）](https://cursor.com/changelog/voice-chat) |
 | 3.28.5 | 2026-10-28 | 全平台 | — |
 | 3.27.22 | 2026-10-27 | 全平台 | — |
